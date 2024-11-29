@@ -2,29 +2,51 @@ package main
 
 import "fmt"
 
-func main()  {
-	var names = []string{"John", "Doe"}
-	fmt.Println(calculate(1, 2))
-	fmt.Println(getAverage(1, 2, 3, 4, 5, 6 ,7, 8, 9, 10))
-	printName("Hello", names)
-}
+func main() {
+	var name string = "John"
+	age := 27
 
-func printName(word string, arr []string)  {
-	for _, name := range arr {
-		fmt.Println(word, name)
+	count := 10
+	for i := 0; i < count; i++ {
+		if i%2 == 0 {
+			println("I am counting", i)
+		}
 	}
+
+	switch age {
+		case 25:
+			println("I am 25")
+		case 26:
+			println("I am 26")
+		default:
+			println("I am not 25 or 26")
+	}
+
+	var fruits = []string{"apple", "banana", "orange"}
+	for i, fruit := range fruits {
+		println(i, fruit)
+	}
+
+	fmt.Println("Hello, my name is", name, "and I am", age, "years old.")
+	var result int = add(10, 5)
+	println("10 + 5 =", result)
+
+	var avg float32 = calculate(10, 20, 30, 40, 50, 60, 70)
+	var msg = fmt.Sprintf("The average is %.2f", avg)
+	println(msg)
 }
 
-func calculate(a, b int) int {
+func add(a int, b int) int {
 	return a + b
 }
 
-func getAverage(numbers ...int) float64  {
+func calculate(numbers ...int) float32 {
 	var total int = 0;
+
 	for _, number := range numbers {
 		total += number
 	}
 
-	var avg = float64(total) / float64(len(numbers))
+	var avg = float32(total) / float32(len(numbers))
 	return avg
 }
