@@ -11,39 +11,19 @@ import (
 func main() {
 	runtime.GOMAXPROCS(2)
 
-	// messages := make(chan int, 2)
+	messages := make(chan int, 2)
 
-	var messages = make(chan string)
+	go func ()  {
+		for {
+			i := <- messages
+			fmt.Println("receive data", i)
+		}
+	}()
 
-	var sayHelloTo = func (who string)  {
-		var data = fmt.Sprintf("hello %s", who)
-		messages <- data
+	for i := 0; i < 5; i++ {
+		fmt.Println("send data", i)
+		messages <- i
 	}
-
-	go sayHelloTo("john wick")
-	go sayHelloTo("ethan hunt")
-	go sayHelloTo("jason bourne")
-
-	var message1 = <-messages
-	fmt.Println(message1)
-
-	var message2 = <-messages
-	fmt.Println(message2)
-
-	var message3 = <-messages
-	fmt.Println(message3)
-
-	// go func ()  {
-	// 	for {
-	// 		i := <- messages
-	// 		fmt.Println("receive data", i)
-	// 	}
-	// }()
-
-	// for i := 0; i < 5; i++ {
-	// 	fmt.Println("send data", i)
-	// 	messages <- i
-	// }
 
 	// var bangunDatar interfaces.Hitung
 	// bangunDatar = geometry.Persegi{Sisi: 10.0}
