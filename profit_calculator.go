@@ -1,7 +1,6 @@
 package main
 
 import (
-	"math"
 	"fmt"
 )
 
@@ -18,8 +17,8 @@ func main()  {
 	fmt.Scan(&taxRate)
 
 	ebt := revenue - expenses
-	profit := ebt - (ebt * taxRate / 100)
-	ratio := math.Round(profit / revenue * 100)
+	profit := ebt * (1 - taxRate / 100)
+	ratio := ebt / profit
 
 	fmt.Printf("EBT = %.2f\n", ebt)
 	fmt.Printf("Profit = %.2f\n", profit)
