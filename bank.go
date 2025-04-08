@@ -19,37 +19,33 @@ func main()  {
 		
 		fmt.Println("You selected: ", choice)
 	
-		if choice == 1 {
-			fmt.Println("Your account balance is: ", acountBalance)
-		} else if choice == 2 {
-			var depositAmount float64
-			fmt.Println("Enter the amount to deposit: ")
-			fmt.Scan(&depositAmount)
-			acountBalance += depositAmount
-			if depositAmount <= 0 {
-				fmt.Println("Invalid deposit amount!")
-				continue
-			}
+		switch choice {
+			case 1:
+				fmt.Println("Your account balance is: ", acountBalance)
+			case 2:
+				var depositAmount float64
+				fmt.Println("Enter the amount to deposit: ")
+				fmt.Scan(&depositAmount)
+				acountBalance += depositAmount
+				if depositAmount <= 0 {
+					fmt.Println("Invalid deposit amount!")
+					continue
+				}
 
-			fmt.Println("Your new account balance is: ", acountBalance)
-		} else if choice == 3 {
-			var withdrawAmount float64
-			fmt.Print("Enter the amount to withdraw: ")
-			fmt.Scan(&withdrawAmount)
-			if withdrawAmount > acountBalance {
-				fmt.Println("Insufficient funds!")
-			} else {
-				acountBalance -= withdrawAmount
 				fmt.Println("Your new account balance is: ", acountBalance)
-			}
-		} else if choice == 4 {
-			fmt.Println("Thank you for using Go Bank!")
-			break
-		} else {
-			fmt.Println("Invalid choice!")
-			break
+			case 3:
+				var withdrawAmount float64
+				fmt.Print("Enter the amount to withdraw: ")
+				fmt.Scan(&withdrawAmount)
+				if withdrawAmount > acountBalance {
+					fmt.Println("Insufficient funds!")
+				} else {
+					acountBalance -= withdrawAmount
+					fmt.Println("Your new account balance is: ", acountBalance)
+				}
+			default:
+				fmt.Println("Thank you for using Go Bank!")
+				return
 		}
 	}
-
-	fmt.Println("Thank for using our bank...")
 }
