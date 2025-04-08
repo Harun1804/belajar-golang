@@ -1,10 +1,10 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
-	"errors"
 )
 
 const fileBalance = "balance.txt"
@@ -36,6 +36,7 @@ func main()  {
 		fmt.Println("ERROR")
 		fmt.Println(err)
 		fmt.Println("---------------")
+		// panic(err) // same as dd() in laravel
 	}
 
 	fmt.Println("Welcome to Go Bank!")
