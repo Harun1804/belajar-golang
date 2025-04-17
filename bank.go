@@ -9,29 +9,29 @@ import (
 
 const fileBalance = "balance.txt"
 
-func writeFileBalance(balance float64) {
-	balanceString := fmt.Sprint(balance)
-	os.WriteFile(fileBalance, []byte(balanceString), 0644)
+func writeFloatToFile(value float64, filename string) {
+	valueText := fmt.Sprint(value)
+	os.WriteFile(filename, []byte(valueText), 0644)
 }
 
-func readFileBalance() (float64, error) {
-	data, err := os.ReadFile(fileBalance)
+func readFloatFromFile(filename string) (float64, error) {
+	data, err := os.ReadFile(filename)
 	if err != nil {
-		return 1000, errors.New("balance file not found")
+		return 1000, errors.New("file not found")
 	}
 
-	balanceText := string(data)
-	balance, err := strconv.ParseFloat(balanceText, 64)
+	valueText := string(data)
+	value, err := strconv.ParseFloat(valueText, 64)
 
 	if err != nil {
 		return 1000, errors.New("error converting balance to float")
 	}
 
-	return balance, nil
+	return value, nil
 }
 
 func main()  {
-	var acountBalance, err = readFileBalance()
+	var acountBalance, err = readFloatFromFile(fileBalance)
 	if err != nil {
 		fmt.Println("ERROR")
 		fmt.Println(err)
@@ -63,7 +63,7 @@ func main()  {
 				}
 
 				fmt.Println("Your new account balance is: ", acountBalance)
-				writeFileBalance(acountBalance)
+				writeFloatToFile(acountBalance, fileBalance)
 			case 3:
 				var withdrawAmount float64
 				fmt.Print("Enter the amount to withdraw: ")
@@ -73,7 +73,7 @@ func main()  {
 				} else {
 					acountBalance -= withdrawAmount
 					fmt.Println("Your new account balance is: ", acountBalance)
-					writeFileBalance(acountBalance)
+					writeFloatToFile(acountBalance, fileBalance)
 				}
 			default:
 				fmt.Println("Thank you for using Go Bank!")
