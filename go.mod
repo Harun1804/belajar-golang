@@ -1,3 +1,3 @@
-module example.com/pointers
+module example.com/struct
 
 go 1.23.3
