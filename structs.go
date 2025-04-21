@@ -12,6 +12,19 @@ type user struct {
 	createdAt time.Time
 }
 
+func (u *user) outputMethodData() {
+	fmt.Println(u.firstName, u.lastName, u.birthdate)
+}
+
+func (u *user) clearingUserData() {
+	fmt.Println("Clearing user data...")
+	u.firstName = ""
+	u.lastName = ""
+	u.birthdate = ""
+	u.createdAt = time.Time{}
+	fmt.Println("User data cleared.")
+}
+
 func main() {
 	userFirstName := getUserData("Enter your first name:")
 	userLastName := getUserData("Enter your last name:")
@@ -25,10 +38,12 @@ func main() {
 	}
 
 	outputUserData(&userData)
+	userData.clearingUserData()
+	userData.outputMethodData()
 }
 
 func outputUserData(u *user) {
-	fmt.Println(u.firstName, u.lastName, u.birthdate, u.createdAt)
+	fmt.Println(u.firstName, u.lastName, u.birthdate)
 }
 
 func getUserData(promptText string) string {
