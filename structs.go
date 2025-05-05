@@ -25,19 +25,23 @@ func (u *user) clearingUserData() {
 	fmt.Println("User data cleared.")
 }
 
+func newUser(firstName, lastName, birthdate string) *user {
+	return &user{
+		firstName: firstName,
+		lastName:  lastName,
+		birthdate: birthdate,
+		createdAt: time.Time{},
+	}
+}
+
 func main() {
 	userFirstName := getUserData("Enter your first name:")
 	userLastName := getUserData("Enter your last name:")
 	userBirthdate := getUserData("Enter your birth date (YYYY-MM-DD):")
 
-	userData := user{
-		firstName: userFirstName,
-		lastName:  userLastName,
-		birthdate: userBirthdate,
-		createdAt: time.Now(),
-	}
+	userData := newUser(userFirstName, userLastName, userBirthdate)
 
-	outputUserData(&userData)
+	outputUserData(userData)
 	userData.clearingUserData()
 	userData.outputMethodData()
 }
