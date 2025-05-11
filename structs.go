@@ -16,6 +16,10 @@ func main() {
 		return
 	}
 
+	admin := user.NewAdmin("bintang", "rahasia")
+	admin.OutputMethodData()
+	admin.ClearingUserData()
+
 	userData.ClearingUserData()
 	userData.OutputMethodData()
 }
