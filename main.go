@@ -8,8 +8,9 @@ import (
 
 func main() {
 	title, content := getNoteData()
-	_, err := note.New(title, content)
+	getNoteData, err := note.New(title, content)
 	helpers.DisplayError(err)
+	getNoteData.Display()
 }
 
 func getNoteData() (string, string) {
