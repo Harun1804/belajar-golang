@@ -15,6 +15,9 @@ func main() {
 	getNoteData, err := note.New(title, content)
 	helpers.DisplayError(err)
 	getNoteData.Display()
+	err = getNoteData.Save()
+	helpers.DisplayError(err)
+	fmt.Println("Note saved successfully!")
 }
 
 func getNoteData() (string, string) {
