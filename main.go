@@ -1,42 +1,28 @@
 package main
 
 import (
-	"errors"
 	"fmt"
+	"example.com/note/helpers"
+	"example.com/note/note"
 )
 
 func main() {
-	_, _, err := getNoteData()
-	displayError(err)
+	title, content := getNoteData()
+	_, err := note.New(title, content)
+	helpers.DisplayError(err)
 }
 
-func getNoteData() (string, string, error) {
-	title, err := getUserInput("Enter note title: ")
-	if err != nil {
-		return "", "", err
-	}
+func getNoteData() (string, string) {
+	title := getUserInput("Enter note title: ")
+	content := getUserInput("Enter note content: ")
 
-	content, err := getUserInput("Enter note content: ")
-	if err != nil {
-		return "", "", err
-	}
-
-	return title, content, nil
+	return title, content
 }
 
-func getUserInput(prompt string) (string, error) {
+func getUserInput(prompt string) string {
 	fmt.Print(prompt)
 	var input string
 	fmt.Scanln(&input)
-	if input == "" { 
-		return "", errors.New("input cannot be empty")
-	}
 
-	return input, nil
-}
-
-func displayError(err error) {
-	if err != nil {
-		fmt.Println("Error: ", err)
-	}
+	return input
 }
