@@ -78,3 +78,7 @@ func outputDate(output outputer) error {
 	output.Display()
 	return saveData(output)
 }
+
+func printSomething(value interface{}) {
+	fmt.Println(value)
+}
