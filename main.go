@@ -83,14 +83,26 @@ func outputDate(output outputer) error {
 }
 
 func printSomething(value interface{}) {
-	switch value.(type) {
-		case int:
-			fmt.Println("integer: ",value)
-		case string:
-			fmt.Println("string: ",value)
-		case float64:
-			fmt.Println("float: ",value)
-		default: 
-			fmt.Println("unknown type: ",value)
+	stringVal, ok := value.(string)
+	if ok {
+		fmt.Println("string: ", stringVal)
+		return
 	}
+
+	intVal, ok := value.(int)
+	if ok {
+		fmt.Println("int: ", intVal)
+		return
+	}
+
+	// switch value.(type) {
+	// 	case int:
+	// 		fmt.Println("integer: ",value)
+	// 	case string:
+	// 		fmt.Println("string: ",value)
+	// 	case float64:
+	// 		fmt.Println("float: ",value)
+	// 	default: 
+	// 		fmt.Println("unknown type: ",value)
+	// }
 }
