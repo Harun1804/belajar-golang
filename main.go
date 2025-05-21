@@ -8,16 +8,30 @@ import (
 
 	"example.com/note/helpers"
 	"example.com/note/note"
+	"example.com/note/todo"
 )
+
+type saver interface {
+	Save() error
+}
 
 func main() {
 	title, content := getNoteData()
 	getNoteData, err := note.New(title, content)
+
 	helpers.DisplayError(err)
 	getNoteData.Display()
-	err = getNoteData.Save()
+	err = saveData(getNoteData)
 	helpers.DisplayError(err)
 	fmt.Println("Note saved successfully!")
+
+	text := getTodoData()
+	getTodoData, err := todo.New(text)
+	helpers.DisplayError(err)
+	getTodoData.Display()
+	err = saveData(getTodoData)
+	helpers.DisplayError(err)
+	fmt.Println("Todo saved successfully!")
 }
 
 func getNoteData() (string, string) {
@@ -25,6 +39,12 @@ func getNoteData() (string, string) {
 	content := getUserInput("Enter note content:")
 
 	return title, content
+}
+
+func getTodoData() (string) {
+	text := getUserInput("Enter todo text:")
+
+	return text
 }
 
 func getUserInput(prompt string) string {
@@ -35,4 +55,13 @@ func getUserInput(prompt string) string {
 	input = strings.TrimSuffix(input, "\n")
 	input = strings.TrimSuffix(input, "\r")
 	return input
+}
+
+func saveData(s saver) error {
+	err := s.Save()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
