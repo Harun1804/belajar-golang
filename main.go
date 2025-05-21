@@ -15,22 +15,30 @@ type saver interface {
 	Save() error
 }
 
+type displayer interface {
+	Display()
+}
+
+type outputer interface {
+	saver
+	displayer
+	// DoSomething()
+}
+
 func main() {
 	title, content := getNoteData()
 	getNoteData, err := note.New(title, content)
 
 	helpers.DisplayError(err)
-	getNoteData.Display()
-	err = saveData(getNoteData)
+	err = outputDate(getNoteData)
 	helpers.DisplayError(err)
 	fmt.Println("Note saved successfully!")
 
 	text := getTodoData()
 	getTodoData, err := todo.New(text)
 	helpers.DisplayError(err)
-	getTodoData.Display()
-	err = saveData(getTodoData)
-	helpers.DisplayError(err)
+	outputDate(getTodoData)
+	// helpers.DisplayError(err)
 	fmt.Println("Todo saved successfully!")
 }
 
@@ -64,4 +72,9 @@ func saveData(s saver) error {
 	}
 
 	return nil
+}
+
+func outputDate(output outputer) error {
+	output.Display()
+	return saveData(output)
 }
