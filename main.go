@@ -26,6 +26,9 @@ type outputer interface {
 }
 
 func main() {
+	printSomething(1)
+	printSomething(1.5)
+	printSomething("hello")
 	title, content := getNoteData()
 	getNoteData, err := note.New(title, content)
 
@@ -80,5 +83,14 @@ func outputDate(output outputer) error {
 }
 
 func printSomething(value interface{}) {
-	fmt.Println(value)
+	switch value.(type) {
+		case int:
+			fmt.Println("integer: ",value)
+		case string:
+			fmt.Println("string: ",value)
+		case float64:
+			fmt.Println("float: ",value)
+		default: 
+			fmt.Println("unknown type: ",value)
+	}
 }
