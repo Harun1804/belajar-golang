@@ -8,11 +8,10 @@ func main() {
 		"Facebook": "https://www.facebook.com",
 		"Amazon Web Services": "https://aws.amazon.com",
 	}
-	fmt.Println(websites)
-	fmt.Println(websites["Google"])
 	websites["Twitter"] = "https://www.twitter.com"
-	fmt.Println(websites["Twitter"])
-
 	delete(websites, "Facebook")
-	fmt.Println(websites)
+
+	for i, val := range websites {
+		fmt.Printf("%s: %s\n", i, val)
+	}
 }
