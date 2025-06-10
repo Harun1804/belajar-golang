@@ -1,18 +1,14 @@
 package main
 
+import (
+	"example.com/price-calculator/prices"
+)
+
 func main() {
-	numbers := []int{1, 2, 3, 4, 5}
-	number:= sumup(1, 2, 3, 4, 5)
-	anotherNumber := sumup(numbers...)
-	println("Sum of numbers is:", number)
-	println("Sum of another numbers is:", anotherNumber)
-}
+	taxRates := []float64{0.05, 0.07, 0.06, 0.04, 0.03, 0.02}
 
-func sumup(numbers ...int) int {
-	result := 0
-	for _, number := range numbers {
-		result += number
+	for _, taxRate := range taxRates {
+		priceJob := prices.NewTaxIncludedPriceJob(taxRate)
+		priceJob.Process()
 	}
-
-	return result
 }
