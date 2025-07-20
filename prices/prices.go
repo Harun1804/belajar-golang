@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"example.com/price-calculator/utils/converter"
-	"example.com/price-calculator/utils/errorhandling"
 	"example.com/price-calculator/utils/iomanager"
 )
 
@@ -15,18 +14,27 @@ type TaxIncludedPriceJob struct {
 	TaxIncludedPrices map[string]string      	`json:"tax_included_prices"`
 }
 
-func (job *TaxIncludedPriceJob) loadData() {
+func (job *TaxIncludedPriceJob) loadData() error {
 	lines, err := job.IO.ReadFile()
-	errorhandling.HandleError(err, "Failed to load prices")
+	if err != nil {
+		return err
+	}
 
 	prices, err := converter.StringsToFloats(lines)
-	errorhandling.HandleError(err, "Failed to convert prices to float64")
+	if err != nil {
+		return err
+	}
 
 	job.InputPrices = prices
+	return nil
 }
 
-func (job *TaxIncludedPriceJob) Process(doneChan chan bool) {
-	job.loadData()
+func (job *TaxIncludedPriceJob) Process(doneChan chan bool, errorChan chan error) {
+	err := job.loadData()
+	if err != nil {
+		errorChan <- err
+		return
+	}
 
 	total := make(map[string]string)
 
@@ -36,8 +44,7 @@ func (job *TaxIncludedPriceJob) Process(doneChan chan bool) {
 	}
 
 	job.TaxIncludedPrices = total
-	err := job.IO.WriteJson(job)
-	errorhandling.HandleError(err, "Failed to write tax included prices to JSON")
+	job.IO.WriteJson(job)
 	doneChan <- true
 }
 
