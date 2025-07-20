@@ -17,9 +17,10 @@ type FileManager struct {
 func (fm FileManager) ReadFile() ([]string, error) {
 	file, err := os.Open(fm.InputFilePath)
 	if err != nil {
-		file.Close()
 		return nil, errors.New("Error opening file: " + err.Error())
 	}
+
+	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
 	var lines []string
@@ -29,10 +30,8 @@ func (fm FileManager) ReadFile() ([]string, error) {
 
 	err = scanner.Err()
 	if err != nil {
-		file.Close()
 		return nil, errors.New("Error reading file line: " + err.Error())
 	}
-	file.Close()
 
 	return lines, nil
 }
@@ -47,16 +46,16 @@ func (fm FileManager) WriteJson(data interface{}) error {
 	if err != nil {
 		return errors.New("Error creating JSON file: " + err.Error())
 	}
+
+	defer file.Close()
 	time.Sleep(3 * time.Second) // Simulate a delay for writing
 
 	encoder := json.NewEncoder(file)
 	err = encoder.Encode(data)
 	if err != nil {
-		file.Close()
 		return errors.New("Error writing JSON to file: " + err.Error())
 	}
 
-	file.Close()
 	return nil
 }
 
