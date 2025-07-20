@@ -7,8 +7,14 @@ import (
 	"os"
 )
 
-func ReadFile(filePath string) ([]string, error) {
-	file, err := os.Open(filePath)
+type FileManager struct {
+	InputFilePath string
+	OutputDirectory string
+	OutputFilePath string
+}
+
+func (fm FileManager) ReadFile() ([]string, error) {
+	file, err := os.Open(fm.InputFilePath)
 	if err != nil {
 		file.Close()
 		return nil, errors.New("Error opening file: " + err.Error())
@@ -30,13 +36,13 @@ func ReadFile(filePath string) ([]string, error) {
 	return lines, nil
 }
 
-func WriteJson(directory string, filePath string, data interface{}) error {
-	err := CreateDirectoryIfNotExists(directory)
+func (fm FileManager) WriteJson(data interface{}) error {
+	err := createDirectoryIfNotExists(fm.OutputDirectory)
 	if err != nil {
 		return err
 	}
 
-	file, err := os.Create(filePath)
+	file, err := os.Create(fm.OutputFilePath)
 	if err != nil {
 		return errors.New("Error creating JSON file: " + err.Error())
 	}
@@ -52,7 +58,7 @@ func WriteJson(directory string, filePath string, data interface{}) error {
 	return nil
 }
 
-func CreateDirectoryIfNotExists(dir string) error {
+func createDirectoryIfNotExists(dir string) error {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		err := os.MkdirAll(dir, os.ModePerm)
 		if err != nil {
@@ -60,4 +66,12 @@ func CreateDirectoryIfNotExists(dir string) error {
 		}
 	}
 	return nil
+}
+
+func New(inputFilePath, outputDirectory, outputFilePath string) FileManager {
+	return FileManager{
+		InputFilePath:  inputFilePath,
+		OutputDirectory: outputDirectory,
+		OutputFilePath: outputFilePath,
+	}
 }
