@@ -1,4 +1,4 @@
-package convertion
+package utils
 
 import (
 	"errors"
