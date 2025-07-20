@@ -2,7 +2,10 @@ package prices
 
 import (
 	"fmt"
-	"example.com/price-calculator/utils"
+
+	"example.com/price-calculator/utils/converter"
+	"example.com/price-calculator/utils/errorhandling"
+	"example.com/price-calculator/utils/filemanager"
 )
 
 type TaxIncludedPriceJob struct {
@@ -12,11 +15,11 @@ type TaxIncludedPriceJob struct {
 }
 
 func (job *TaxIncludedPriceJob) loadData() {
-	lines, err := utils.ReadFile("prices.txt")
-	utils.HandleError(err, "Failed to load prices")
+	lines, err := filemanager.ReadFile("prices.txt")
+	errorhandling.HandleError(err, "Failed to load prices")
 
-	prices, err := utils.StringsToFloats(lines)
-	utils.HandleError(err, "Failed to convert prices to float64")
+	prices, err := converter.StringsToFloats(lines)
+	errorhandling.HandleError(err, "Failed to convert prices to float64")
 
 	job.InputPrices = prices
 }
@@ -32,8 +35,8 @@ func (job *TaxIncludedPriceJob) Process() {
 	}
 
 	job.TaxIncludedPrices = total
-	err := utils.WriteJson("result", fmt.Sprintf("result/result_%.0f.json", job.TaxRate*100), job)
-	utils.HandleError(err, "Failed to write tax included prices to JSON")
+	err := filemanager.WriteJson("result", fmt.Sprintf("result/result_%.0f.json", job.TaxRate*100), job)
+	errorhandling.HandleError(err, "Failed to write tax included prices to JSON")
 }
 
 func NewTaxIncludedPriceJob(taxRate float64) *TaxIncludedPriceJob {

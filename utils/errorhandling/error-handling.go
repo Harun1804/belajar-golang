@@ -1,4 +1,4 @@
-package utils
+package errorhandling
 
 import "fmt"
 
