@@ -32,7 +32,8 @@ func (job *TaxIncludedPriceJob) Process() {
 	}
 
 	job.TaxIncludedPrices = total
-	utils.WriteJson(fmt.Sprintf("result/result_%.0f.json", job.TaxRate*100), job)
+	err := utils.WriteJson("result", fmt.Sprintf("result/result_%.0f.json", job.TaxRate*100), job)
+	utils.HandleError(err, "Failed to write tax included prices to JSON")
 }
 
 func NewTaxIncludedPriceJob(taxRate float64) *TaxIncludedPriceJob {

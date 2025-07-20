@@ -30,7 +30,12 @@ func ReadFile(filePath string) ([]string, error) {
 	return lines, nil
 }
 
-func WriteJson(filePath string, data interface{}) error {
+func WriteJson(directory string, filePath string, data interface{}) error {
+	err := CreateDirectoryIfNotExists(directory)
+	if err != nil {
+		return err
+	}
+
 	file, err := os.Create(filePath)
 	if err != nil {
 		return errors.New("Error creating JSON file: " + err.Error())
@@ -44,5 +49,15 @@ func WriteJson(filePath string, data interface{}) error {
 	}
 
 	file.Close()
+	return nil
+}
+
+func CreateDirectoryIfNotExists(dir string) error {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		err := os.MkdirAll(dir, os.ModePerm)
+		if err != nil {
+			return errors.New("Error creating directory: " + err.Error())
+		}
+	}
 	return nil
 }
