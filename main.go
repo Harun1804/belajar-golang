@@ -30,7 +30,7 @@ func createEvent(context *gin.Context) {
 	err := context.ShouldBindJSON(&event)
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
+		context.JSON(http.StatusUnprocessableEntity, gin.H{
 			"status":  false,
 			"message": "Invalid input data",
 			"data":    nil,
@@ -41,6 +41,7 @@ func createEvent(context *gin.Context) {
 	event.ID = 1
 	event.UserID = 1 // Assuming a static UserID for simplicity
 
+	event.Store()
 	context.JSON(http.StatusCreated, gin.H{
 		"status":  true,
 		"message": "Event created successfully",
