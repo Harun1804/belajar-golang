@@ -25,7 +25,7 @@ func (job *TaxIncludedPriceJob) loadData() {
 	job.InputPrices = prices
 }
 
-func (job *TaxIncludedPriceJob) Process() {
+func (job *TaxIncludedPriceJob) Process(doneChan chan bool) {
 	job.loadData()
 
 	total := make(map[string]string)
@@ -38,6 +38,7 @@ func (job *TaxIncludedPriceJob) Process() {
 	job.TaxIncludedPrices = total
 	err := job.IO.WriteJson(job)
 	errorhandling.HandleError(err, "Failed to write tax included prices to JSON")
+	doneChan <- true
 }
 
 func NewTaxIncludedPriceJob(io iomanager.IOManager, taxRate float64) *TaxIncludedPriceJob {
