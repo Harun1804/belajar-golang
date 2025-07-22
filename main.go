@@ -19,7 +19,16 @@ func main() {
 }
 
 func getEvents(context *gin.Context) {
-	events := models.GetEvents()
+	events, err := models.GetEvents()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"status":  false,
+			"message": "Failed to retrieve events",
+			"data":    nil,
+		})
+		return
+	}
+
 	context.JSON(http.StatusOK, gin.H{
 		"status": true,
 		"message": "Events retrieved successfully",
@@ -42,7 +51,17 @@ func createEvent(context *gin.Context) {
 
 	event.UserID = 1 // Assuming a static UserID for simplicity
 
-	event.Store()
+	err = event.Store()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"status":  false,
+			"message": "Failed to create event",
+			"data":    nil,
+		})
+		return
+	}
+
+
 	context.JSON(http.StatusCreated, gin.H{
 		"status":  true,
 		"message": "Event created successfully",
