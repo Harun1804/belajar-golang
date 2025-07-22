@@ -40,7 +40,6 @@ func createEvent(context *gin.Context) {
 		return
 	}
 
-	event.ID = 1
 	event.UserID = 1 // Assuming a static UserID for simplicity
 
 	event.Store()
