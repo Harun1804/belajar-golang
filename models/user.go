@@ -1,6 +1,8 @@
 package models
 
 import (
+	"errors"
+
 	"example.com/rest-api/db"
 	"example.com/rest-api/utils"
 )
@@ -30,4 +32,33 @@ func (u User) CreateUser() error {
 
 	_, err = stmt.Exec(u.Email, hashPassword)
 	return err
+}
+
+func (u User) Authenticate() error {
+	query := `
+	SELECT password FROM users WHERE email = ?`
+
+	row := db.DB.QueryRow(query, u.Email)
+	var storedPassword string
+	err := row.Scan(&storedPassword)
+
+	if err != nil {
+		return err
+	}
+
+	passwordIsValid := utils.CheckPasswordHash(u.Password, storedPassword)
+	if !passwordIsValid {
+		return errors.New("invalid password")
+	}
+
+	return nil
+
+	// if !utils.CheckPasswordHash(u.Password, storedPassword) {
+	// 	return "", utils.ErrInvalidCredentials
+	// }
+
+	// token, err := utils.GenerateJWT(u.ID)
+	// if err != nil {
+	// 	return "", err
+	// }
 }
