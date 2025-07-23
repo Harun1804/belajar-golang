@@ -5,53 +5,40 @@ import (
 	"strconv"
 
 	"example.com/rest-api/models"
+	"example.com/rest-api/repositories"
+	"example.com/rest-api/services"
+	"example.com/rest-api/utils/responseformatter"
 	"github.com/gin-gonic/gin"
 )
 
+var eventService = services.EventService{
+	Repo: &repositories.EventRepository{},
+}
+
 func GetEvents(context *gin.Context) {
-	events, err := models.GetEvents()
+	events, err := eventService.GetEvents()
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{
-			"status":  false,
-			"message": "Failed to retrieve events",
-			"data":    nil,
-		})
+		responseformatter.Error(context, http.StatusInternalServerError, "Failed to retrieve events")
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{
-		"status": true,
-		"message": "Events retrieved successfully",
-		"data": events,
-	})
+	responseformatter.Success(context, http.StatusOK, "Events retrieved successfully", events)
 }
 
 func GetEvent(context *gin.Context) {
 	id, err := strconv.ParseInt(context.Param("id"), 10, 64)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
-			"status":  false,
-			"message": "Invalid event ID",
-			"data":    nil,
-		})
-		return
-	}
-	
-	event, err := models.GetEvent(id)
-	if err != nil {
-		context.JSON(http.StatusNotFound, gin.H{
-			"status":  false,
-			"message": "Event not found",
-			"data":    nil,
-		})
+		responseformatter.Error(context, http.StatusBadRequest, "Invalid event ID")
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{
-		"status":  true,
-		"message": "Event retrieved successfully",
-		"data":    event,
-	})
+	event, err := eventService.GetEvent(id)
+	if err != nil {
+		responseformatter.Error(context, http.StatusNotFound, "Event not found")
+		return
+	}
+	
+	responseformatter.Success(context, http.StatusOK, "Event retrieved successfully", event)
 }
 
 func CreateEvent(context *gin.Context) {
@@ -59,106 +46,61 @@ func CreateEvent(context *gin.Context) {
 	err := context.ShouldBindJSON(&event)
 
 	if err != nil {
-		context.JSON(http.StatusUnprocessableEntity, gin.H{
-			"status":  false,
-			"message": "Invalid input data",
-			"data":    nil,
-		})
+		responseformatter.Error(context, http.StatusBadRequest, "Invalid input data")
 		return
 	}
 
-	err = event.Store()
+	err = eventService.CreateEvent(&event)
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{
-			"status":  false,
-			"message": "Failed to create event",
-			"data":    nil,
-		})
+		responseformatter.Error(context, http.StatusInternalServerError, "Failed to create event")
 		return
 	}
 
-
-	context.JSON(http.StatusCreated, gin.H{
-		"status":  true,
-		"message": "Event created successfully",
-		"data":    event,
-	})
+	responseformatter.Success(context, http.StatusCreated, "Event created successfully", event)
 }
 
 func UpdateEvent(context *gin.Context) {
 	id, err := strconv.ParseInt(context.Param("id"), 10, 64)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
-			"status":  false,
-			"message": "Invalid event ID",
-			"data":    nil,
-		})
+		responseformatter.Error(context, http.StatusBadRequest, "Invalid event ID")
 		return
 	}
 
 	var event models.Event
 	err = context.ShouldBindJSON(&event)
 	if err != nil {
-		context.JSON(http.StatusUnprocessableEntity, gin.H{
-			"status":  false,
-			"message": "Invalid input data",
-			"data":    nil,
-		})
+		responseformatter.Error(context, http.StatusBadRequest, "Invalid input data")
 		return
 	}
 
 	event.ID = id
-	err = event.UpdateEvent()
+	err = eventService.UpdateEvent(id, &event)
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{
-			"status":  false,
-			"message": "Failed to update event",
-			"data":    nil,
-		})
+		responseformatter.Error(context, http.StatusInternalServerError, "Failed to update event")
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{
-		"status":  true,
-		"message": "Event updated successfully",
-		"data":    event,
-	})
+	responseformatter.Success(context, http.StatusOK, "Event updated successfully", event)
 }
 
 func DeleteEvent(context *gin.Context) {
 	id, err := strconv.ParseInt(context.Param("id"), 10, 64)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
-			"status":  false,
-			"message": "Invalid event ID",
-			"data":    nil,
-		})
+		responseformatter.Error(context, http.StatusBadRequest, "Invalid event ID")
 		return
 	}
 
-	event, err := models.GetEvent(id)
+	event, err := eventService.GetEvent(id)
 	if err != nil {
-		context.JSON(http.StatusNotFound, gin.H{
-			"status":  false,
-			"message": "Event not found",
-			"data":    nil,
-		})
+		responseformatter.Error(context, http.StatusNotFound, "Event not found")
 		return
 	}
 
-	err = event.DeleteEvent()
+	err = eventService.DeleteEvent(event)
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{
-			"status":  false,
-			"message": "Failed to delete event",
-			"data":    nil,
-		})
+		responseformatter.Error(context, http.StatusInternalServerError, "Failed to delete event")
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{
-		"status":  true,
-		"message": "Event deleted successfully",
-		"data":    nil,
-	})
+	responseformatter.Success(context, http.StatusOK, "Event deleted successfully", nil)
 }
