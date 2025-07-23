@@ -84,3 +84,43 @@ func CreateEvent(context *gin.Context) {
 		"data":    event,
 	})
 }
+
+func UpdateEvent(context *gin.Context) {
+	id, err := strconv.ParseInt(context.Param("id"), 10, 64)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{
+			"status":  false,
+			"message": "Invalid event ID",
+			"data":    nil,
+		})
+		return
+	}
+
+	var event models.Event
+	err = context.ShouldBindJSON(&event)
+	if err != nil {
+		context.JSON(http.StatusUnprocessableEntity, gin.H{
+			"status":  false,
+			"message": "Invalid input data",
+			"data":    nil,
+		})
+		return
+	}
+
+	event.ID = id
+	err = event.Update()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"status":  false,
+			"message": "Failed to update event",
+			"data":    nil,
+		})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{
+		"status":  true,
+		"message": "Event updated successfully",
+		"data":    event,
+	})
+}
