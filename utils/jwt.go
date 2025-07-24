@@ -10,7 +10,6 @@ import (
 const secretKey = "supersecretkey"
 
 func GenerateToken(email string, userId int64) (string, error) {
-	println("Generating token for user ID:", userId)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"email": email,
 		"userId": userId,
@@ -31,12 +30,7 @@ func VerifyToken(token string) (int64, error) {
 		return 0, err
 	}
 	// email := claims["email"].(string)
-	userIdFloat, ok := claims["userId"].(float64)
-	if !ok {
-		return 0, errors.New("userId in token is not a valid number")
-	}
-	userId := int64(userIdFloat)
-	println("User ID from token:", userId)
+	userId := int64(claims["userId"].(float64))
 	return userId, nil
 }
 
