@@ -3,10 +3,12 @@ package controllers
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	"example.com/rest-api/models"
 	"example.com/rest-api/repositories"
 	"example.com/rest-api/services"
+	"example.com/rest-api/utils"
 	"example.com/rest-api/utils/responseformatter"
 	"github.com/gin-gonic/gin"
 )
@@ -42,6 +44,21 @@ func GetEvent(context *gin.Context) {
 }
 
 func CreateEvent(context *gin.Context) {
+	authHeader := context.GetHeader("Authorization")
+	if authHeader == "" {
+		responseformatter.Error(context, http.StatusUnauthorized, "Authorization token is required")
+		return
+	}
+
+	if strings.HasPrefix(authHeader, "Bearer ") {
+		token := strings.TrimPrefix(authHeader, "Bearer ")		
+			err := utils.VerifyToken(token)
+			if err != nil {
+				responseformatter.Error(context, http.StatusUnauthorized, err.Error())
+				return
+			}
+	}
+
 	var event models.Event
 	err := context.ShouldBindJSON(&event)
 
