@@ -44,6 +44,8 @@ func GetEvent(context *gin.Context) {
 }
 
 func CreateEvent(context *gin.Context) {
+	var userId int64
+	var err error
 	authHeader := context.GetHeader("Authorization")
 	if authHeader == "" {
 		responseformatter.Error(context, http.StatusUnauthorized, "Authorization token is required")
@@ -51,22 +53,23 @@ func CreateEvent(context *gin.Context) {
 	}
 
 	if strings.HasPrefix(authHeader, "Bearer ") {
-		token := strings.TrimPrefix(authHeader, "Bearer ")		
-			err := utils.VerifyToken(token)
-			if err != nil {
-				responseformatter.Error(context, http.StatusUnauthorized, err.Error())
-				return
-			}
+		token := strings.TrimPrefix(authHeader, "Bearer ")
+		userId, err = utils.VerifyToken(token)
+		if err != nil {
+			responseformatter.Error(context, http.StatusUnauthorized, err.Error())
+			return
+		}
 	}
 
 	var event models.Event
-	err := context.ShouldBindJSON(&event)
+	err = context.ShouldBindJSON(&event)
 
 	if err != nil {
 		responseformatter.Error(context, http.StatusBadRequest, "Invalid input data")
 		return
 	}
 
+	event.UserID = userId
 	err = eventService.CreateEvent(&event)
 	if err != nil {
 		responseformatter.Error(context, http.StatusInternalServerError, "Failed to create event")

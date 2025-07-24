@@ -9,8 +9,8 @@ import (
 )
 
 func StoreUser(context *gin.Context) {
-	var user models.User
-	err := context.ShouldBindJSON(&user)
+	user := &models.User{}
+	err := context.ShouldBindJSON(user)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{
 			"status":  false,
@@ -38,8 +38,8 @@ func StoreUser(context *gin.Context) {
 }
 
 func LoginUser(context *gin.Context) {
-	var user models.User
-	err := context.ShouldBindJSON(&user)
+	user := &models.User{}
+	err := context.ShouldBindJSON(user)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{
 			"status":  false,

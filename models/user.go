@@ -13,13 +13,12 @@ type User struct {
 	Password string `binding:"required"`
 }
 
-func (u User) CreateUser() error {
+func (u *User) CreateUser() error {
 	query := `
 	INSERT INTO users (email, password)
 	VALUES (?, ?)`
 
 	stmt, err := db.DB.Prepare(query)
-	
 	if err != nil {
 		return err
 	}
@@ -30,11 +29,20 @@ func (u User) CreateUser() error {
 		return err
 	}
 
-	_, err = stmt.Exec(u.Email, hashPassword)
-	return err
+	result, err := stmt.Exec(u.Email, hashPassword)
+	if err != nil {
+		return err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+	u.ID = id
+	return nil
 }
 
-func (u User) Authenticate() error {
+func (u *User) Authenticate() error {
 	query := `
 	SELECT id, password FROM users WHERE email = ?`
 
@@ -51,6 +59,8 @@ func (u User) Authenticate() error {
 	if !passwordIsValid {
 		return errors.New("invalid password")
 	}
+
+	u.ID = storedID
 
 	return nil
 

@@ -10,6 +10,7 @@ import (
 const secretKey = "supersecretkey"
 
 func GenerateToken(email string, userId int64) (string, error) {
+	println("Generating token for user ID:", userId)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"email": email,
 		"userId": userId,
@@ -19,32 +20,50 @@ func GenerateToken(email string, userId int64) (string, error) {
 	return token.SignedString([]byte(secretKey))
 }
 
-func VerifyToken(token string) error {
-	parsedToken, err :=jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+func VerifyToken(token string) (int64, error) {
+	parsedToken, err := parseToken(token)
+	if err := validateToken(parsedToken, err); err != nil {
+		return 0, err
+	}
+	// If you want to use claims:
+	claims, err := extractClaims(parsedToken)
+	if err != nil {
+		return 0, err
+	}
+	// email := claims["email"].(string)
+	userIdFloat, ok := claims["userId"].(float64)
+	if !ok {
+		return 0, errors.New("userId in token is not a valid number")
+	}
+	userId := int64(userIdFloat)
+	println("User ID from token:", userId)
+	return userId, nil
+}
+
+func parseToken(token string) (*jwt.Token, error) {
+	return jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
 		_, ok := t.Method.(*jwt.SigningMethodHMAC)
 		if !ok {
 			return nil, errors.New("unexpected signing method")
 		}
-
 		return []byte(secretKey), nil
 	})
+}
 
+func validateToken(parsedToken *jwt.Token, err error) error {
 	if err != nil {
 		return errors.New("Could not parse token")
 	}
-
-	tokenIsValid := parsedToken.Valid
-	if !tokenIsValid {
+	if !parsedToken.Valid {
 		return errors.New("Invalid token")
 	}
-
-	// claims, ok := parsedToken.Claims.(jwt.MapClaims)
-	// if !ok {
-	// 	return errors.New("Invalid token claims")
-	// }
-
-	// email := claims["email"].(string)
-	// userId := claims["userId"].(int64)
-
 	return nil
+}
+
+func extractClaims(parsedToken *jwt.Token) (jwt.MapClaims, error) {
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, errors.New("Invalid token claims")
+	}
+	return claims, nil
 }
