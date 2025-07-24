@@ -36,14 +36,15 @@ func (u User) CreateUser() error {
 
 func (u User) Authenticate() error {
 	query := `
-	SELECT password FROM users WHERE email = ?`
+	SELECT id, password FROM users WHERE email = ?`
 
 	row := db.DB.QueryRow(query, u.Email)
+	var storedID int64
 	var storedPassword string
-	err := row.Scan(&storedPassword)
+	err := row.Scan(&storedID, &storedPassword)
 
 	if err != nil {
-		return err
+		return errors.New("user not found")
 	}
 
 	passwordIsValid := utils.CheckPasswordHash(u.Password, storedPassword)
