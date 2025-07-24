@@ -53,7 +53,15 @@ func (r *EventRepository) Store(e *models.Event) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(e.Name, e.Description, e.Location, e.DateTime, e.UserID)
+	result, err := stmt.Exec(e.Name, e.Description, e.Location, e.DateTime, e.UserID)
+
+	if err != nil {
+		return err
+	}
+
+	lastInsertID, err := result.LastInsertId()
+
+	e.ID = lastInsertID
 
 	return err
 }
