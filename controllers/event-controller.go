@@ -82,7 +82,7 @@ func UpdateEvent(context *gin.Context) {
 
 	userId := context.GetInt64("userId")
 	if event.UserID != userId {
-		responseformatter.Error(context, http.StatusForbidden, "You do not have permission to delete this event")
+		responseformatter.Error(context, http.StatusForbidden, "You do not have permission to update this event")
 		return
 	}
 
