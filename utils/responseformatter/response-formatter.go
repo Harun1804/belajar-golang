@@ -36,3 +36,12 @@ func ValidationError(context *gin.Context, statusCode int, message string, error
     }
     context.JSON(statusCode, resp)
 }
+
+func MiddlewareError(context *gin.Context, statusCode int, message string) {
+    resp := Response{
+        Status:  false,
+        Message: message,
+        Data:    nil,
+    }
+    context.AbortWithStatusJSON(statusCode, resp)
+}

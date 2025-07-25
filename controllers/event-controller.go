@@ -3,12 +3,10 @@ package controllers
 import (
 	"net/http"
 	"strconv"
-	"strings"
 
 	"example.com/rest-api/models"
 	"example.com/rest-api/repositories"
 	"example.com/rest-api/services"
-	"example.com/rest-api/utils"
 	"example.com/rest-api/utils/responseformatter"
 	"github.com/gin-gonic/gin"
 )
@@ -44,31 +42,14 @@ func GetEvent(context *gin.Context) {
 }
 
 func CreateEvent(context *gin.Context) {
-	var userId int64
-	var err error
-	authHeader := context.GetHeader("Authorization")
-	if authHeader == "" {
-		responseformatter.Error(context, http.StatusUnauthorized, "Authorization token is required")
-		return
-	}
-
-	if strings.HasPrefix(authHeader, "Bearer ") {
-		token := strings.TrimPrefix(authHeader, "Bearer ")
-		userId, err = utils.VerifyToken(token)
-		if err != nil {
-			responseformatter.Error(context, http.StatusUnauthorized, err.Error())
-			return
-		}
-	}
-
 	var event models.Event
-	err = context.ShouldBindJSON(&event)
+	err := context.ShouldBindJSON(&event)
 
 	if err != nil {
 		responseformatter.Error(context, http.StatusBadRequest, "Invalid input data")
 		return
 	}
-
+	userId := context.GetInt64("userId")
 	event.UserID = userId
 	err = eventService.CreateEvent(&event)
 	if err != nil {
@@ -93,10 +74,15 @@ func UpdateEvent(context *gin.Context) {
 		return
 	}
 
-	event.ID = id
 	err = eventService.UpdateEvent(id, &event)
 	if err != nil {
 		responseformatter.Error(context, http.StatusInternalServerError, "Failed to update event")
+		return
+	}
+
+	userId := context.GetInt64("userId")
+	if event.UserID != userId {
+		responseformatter.Error(context, http.StatusForbidden, "You do not have permission to delete this event")
 		return
 	}
 
@@ -113,6 +99,12 @@ func DeleteEvent(context *gin.Context) {
 	event, err := eventService.GetEvent(id)
 	if err != nil {
 		responseformatter.Error(context, http.StatusNotFound, "Event not found")
+		return
+	}
+
+	userId := context.GetInt64("userId")
+	if event.UserID != userId {
+		responseformatter.Error(context, http.StatusForbidden, "You do not have permission to delete this event")
 		return
 	}
 
