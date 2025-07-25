@@ -29,3 +29,15 @@ func (s *EventService) UpdateEvent(id int64, event *models.Event) error {
 func (s *EventService) DeleteEvent(event *models.Event) error {
     return s.Repo.DeleteEvent(event)
 }
+
+func (s *EventService) RegisterEvent(userId int64, event *models.Event,) (error) {
+	return s.Repo.RegisterEvent(userId, event)
+}
+
+func (s *EventService) CancelEvent(userId int64, event *models.Event) error {
+	return s.Repo.CancelEvent(userId, event)
+}
+
+func (s *EventService) CheckUserEvent(userId int64, event *models.Event) error {
+	return s.Repo.CheckUserEvent(userId, event)
+}

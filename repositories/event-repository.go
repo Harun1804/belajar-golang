@@ -93,3 +93,46 @@ func (r EventRepository) DeleteEvent(e *models.Event) error {
 	_, err = stmt.Exec(e.ID)
 	return err
 }
+
+func (r EventRepository) RegisterEvent(userId int64, e *models.Event) (error) {
+	query := `
+	INSERT INTO event_registrations (event_id, user_id)
+	VALUES (?, ?)`
+
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(e.ID, userId)
+	return err
+}
+
+func (r EventRepository) CancelEvent(userId int64, e *models.Event) (error) {
+	query := `
+	DELETE FROM event_registrations
+	WHERE event_id = ? AND user_id = ?`
+
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(e.ID, userId)
+	return err
+}
+
+func (r EventRepository) CheckUserEvent(userId int64, e *models.Event) error {
+	query := `SELECT id FROM event_registrations WHERE event_id = ? AND user_id = ?`
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	var registrationID int64
+	err = stmt.QueryRow(e.ID, userId).Scan(&registrationID)
+	return err
+}
